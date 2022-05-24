@@ -40,7 +40,7 @@ class SeachProductControllerTest {
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/Products/productName/{productName}","test")
+	      .uri("/name/{name}","test")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
@@ -59,7 +59,7 @@ class SeachProductControllerTest {
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/products/size/{size}","L")
+	      .uri("/size/{size}","L")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
@@ -78,7 +78,7 @@ class SeachProductControllerTest {
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/Products/productName/{productName}/size/{size}","test","L")
+	      .uri("/name/{name}/size/{size}","test","L")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
@@ -98,7 +98,7 @@ class SeachProductControllerTest {
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/Products/page/{offset}",1)
+	      .uri("/offset/{offset}",1)
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 

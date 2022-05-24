@@ -46,7 +46,7 @@ class DeleteProductControllerTest {
            .thenReturn(voidReturn);
 	 
 	 webClient.delete()
-	    .uri("/Products/delete/{id}", 1)
+	    .uri("/{key}", 1)
          .exchange()
          .expectStatus().isNotFound();
         

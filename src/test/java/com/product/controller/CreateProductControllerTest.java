@@ -42,8 +42,8 @@ public class CreateProductControllerTest {
 	    Mockito.when(productService.save(product)).thenReturn(Mono.just(product));
 	    
 
-	    webClient.post()
-        .uri("/update")
+	    webClient.put()
+        .uri("/1")
         .body(Mono.just(p), Product.class)
         .exchange()
         .expectStatus().isNotFound();
@@ -73,11 +73,11 @@ public class CreateProductControllerTest {
 	    
   
 	    webClient.post()
-        .uri(urlBuilder->urlBuilder.path("/Products/create").build())
+        .uri("/")
         .body(Mono.just(p), Product.class)
         .exchange()
         .expectStatus()
-        .isNotFound();
+        .isBadRequest();
 	    
 	    
 	    
