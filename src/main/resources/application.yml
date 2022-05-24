@@ -1,0 +1,20 @@
+server:
+  port : 12340
+couchbase:
+  hostname: "127.0.0.1"
+  bucket: "product"
+  userName: "root"
+  password: "abc123"
+spring:
+  data:
+  webflux:
+    base-path : "/Products"
+    couchbase:
+      auto-index: true
+logging:
+  level:
+    org.springframework.data.couchbase.repository.query: DEBUG
+product:
+  page : 10
+  defaultOffset : 1
+  
