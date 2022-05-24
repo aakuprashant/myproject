@@ -37,12 +37,5 @@ public class CreateProductController {
 	    return productDetail;
 	   
 	  }
-	  @PostMapping(value="/all",consumes = MediaType.APPLICATION_JSON_VALUE)
-	  @ResponseStatus(HttpStatus.CREATED)
-	  public Flux<Product> createProducts(@RequestBody List<Product> products) {
-		  Flux<Product> productDetail=productService.createProducts(products);
-		  logger.info("new product has been created "); 
-	    return productDetail;
-	   
-	  }
+	  
 }
