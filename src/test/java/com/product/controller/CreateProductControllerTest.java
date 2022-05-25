@@ -35,7 +35,7 @@ public class CreateProductControllerTest {
 	@Test
 	public void testUpdate() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 	    Mono<Product> p=Mono.just(product);
@@ -64,10 +64,8 @@ public class CreateProductControllerTest {
 	
 	@Test
 	public void testCreate() {
-		Product product = new Product();
-		product.setProductKey(1);
-		product.setProductName("Test");
-		product.setSize("L");
+		Product product = new Product(1L,"Test","L");
+		
 	    Mono<Product> p=Mono.just(product);
 	    Mockito.when(productService.save(product)).thenReturn(Mono.just(product));
 	    

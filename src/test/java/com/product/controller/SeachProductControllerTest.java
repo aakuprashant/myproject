@@ -33,14 +33,14 @@ class SeachProductControllerTest {
 	@Test
 	void testFindByProductName() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/name/{name}","test")
+	      .uri("/Products/productName/{productName}","test")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
@@ -52,14 +52,14 @@ class SeachProductControllerTest {
 	@Test
 	void testFindBySize() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/size/{size}","L")
+	      .uri("/products/size/{size}","L")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
@@ -71,18 +71,17 @@ class SeachProductControllerTest {
 	@Test
 	void testFindByProductDetails() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/name/{name}/size/{size}","test","L")
+	      .uri("/Products/productName/{productName}/size/{size}","test","L")
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
-	   // Mockito.verify(repository, times(1)).findByProductName("test", 1, 10);
         Mockito.when(repository.findByProductDetails("test","L",1,0)).thenReturn(Flux.just(product));
 	    
 	    
@@ -91,18 +90,17 @@ class SeachProductControllerTest {
 	@Test
 	void testFindProducts() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
 	    
 	    webClient.get()
-	      .uri("/offset/{offset}",1)
+	      .uri("/Products/page/{offset}",1)
 	      .exchange()
 	      .expectStatus().isNotFound();
 	 
-	   // Mockito.verify(repository, times(1)).findByProductName("test", 1, 10);
         Mockito.when(repository.findAll()).thenReturn(Flux.just(product));
 	    
 	    

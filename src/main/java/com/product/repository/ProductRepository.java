@@ -14,15 +14,15 @@ import reactor.core.publisher.Flux;
 @Repository
 @N1qlPrimaryIndexed
 @ViewIndexed(designDoc = "product")
-public interface ProductRepository extends ReactiveCouchbaseRepository<Product, Integer> {
+public interface ProductRepository extends ReactiveCouchbaseRepository<Product, Long> {
 
-	  @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and productName = $1 ORDER BY productName LIMIT $2 OFFSET $3")
+	  @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and lower(productName) = $1 ORDER BY productName LIMIT $2 OFFSET $3")
 	  Flux<Product> findByProductName(final String productName,int page,int offset);
 	  
-	  @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and productName = $1 and size = $2 ORDER BY productName LIMIT $3 OFFSET $4 ")
+	  @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and lower(productName) = $1 and lower(size) = $2 ORDER BY productName LIMIT $3 OFFSET $4 ")
 	  Flux<Product> findByProductDetails(final String productName,final String Size,int limit,int offset);
 	
-      @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and size = $1 ORDER BY size LIMIT $2 OFFSET $3 ")
+      @Query("#{#n1ql.selectEntity} where #{#n1ql.filter} and lower(size) = $1 ORDER BY size LIMIT $2 OFFSET $3 ")
 	  Flux<Product> findBySize(final String Size,int limit,int offset);
       
 }

@@ -1,14 +1,13 @@
 package com.product.document;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Date;
 
 
 public class GeneratorKey  {
 
-	private static AtomicInteger key=new AtomicInteger(1);
 	
-	public static int generateId() {
-		return key.addAndGet(1);
+	public static long generateId() {
+		return new Date().getTime();
 	}
 
 }

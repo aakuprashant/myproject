@@ -34,7 +34,7 @@ class DeleteProductControllerTest {
 	@Test
 	void test() {
 		Product product = new Product();
-		product.setProductKey(1);
+		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
 		
@@ -42,11 +42,11 @@ class DeleteProductControllerTest {
         Mono<Void> voidReturn  = Mono.empty();
  
         Mockito
-        .when(repository.deleteById(1))
+        .when(repository.deleteById(1L))
            .thenReturn(voidReturn);
 	 
 	 webClient.delete()
-	    .uri("/{key}", 1)
+	    .uri("/Products/delete/{id}", 1L)
          .exchange()
          .expectStatus().isNotFound();
         

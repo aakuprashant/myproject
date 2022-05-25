@@ -9,8 +9,7 @@ import reactor.core.publisher.Mono;
 
 public interface ProductService {
 	public Mono<Product> createProduct(Product product);
-	//public Mono<Product> createProducts(Product product);
-	public Mono<Product> updateProduct(Product product,int key);
-	public <T> Mono<Void> deleteProduct(int key);
+	public Mono<Product> updateProduct(Product product,long key);
+	public <T> Mono<Product> deleteProduct(long key);
 	public Flux<Product> createProducts(List<Product> products);
 }
