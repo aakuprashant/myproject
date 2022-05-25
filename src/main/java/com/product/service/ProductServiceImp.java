@@ -54,17 +54,22 @@ public class ProductServiceImp implements ProductService {
 		return
 			productRepository
 		       .findById(key)
-		       .switchIfEmpty(Mono.error(new ProductNotFoundException(String.format("Product key ( %S ) does not exist. error",key))))
-		       .flatMap(p -> this.productRepository.deleteById(p.getProductKey()).thenReturn(p))
-		       .doOnError(th->logger.error("failed to delete ,Error message : {}",th.getMessage()))
-		        .doOnSuccess(p->logger.info("product key {} has been deleted seccessfully",p.getProductKey()));
+		         .switchIfEmpty(Mono.error(new ProductNotFoundException(String.format("Product key ( %S ) does not exist. error",key))))
+		           .flatMap(p -> this.productRepository.deleteById(p.getProductKey()).thenReturn(p))
+		            .doOnError(th->logger.error("failed to delete ,Error message : {}",th.getMessage()))
+		             .doOnSuccess(p->logger.info("product key {} has been deleted seccessfully",p.getProductKey()));
 		        
 	}
 
 	@Override
-	public Flux<Product> createProducts(List<Product> products) {
+	public  Flux<Product> createProducts(Flux<Product> products) {
+		 products.flatMap(p->productRepository.save(p))
+		.onErrorContinue((th, p) ->logger.error("Exception: " + th.getMessage()))
+        .subscribe( p -> logger.info("products {} have been created seccessfully",p.getProductKey()),
+                    e -> logger.error("failed to create ,Error message : {}",e.getMessage()));
 		
-		return productRepository.saveAll(products); 
+		return products;
+		 
 	}
 
 	
