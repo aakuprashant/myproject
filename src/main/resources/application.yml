@@ -7,13 +7,13 @@ couchbase:
   password: "abc123"
 spring:
   data:
-  webflux:
-    base-path : "/Products"
     couchbase:
       auto-index: true
-logging:
-  level:
-    org.springframework.data.couchbase.repository.query: DEBUG
+  webflux:
+    base-path : "/api/v1"
+  logging:
+    level:
+      org.springframework.data.couchbase.repository.query: DEBUG
 product:
   page : 10
   defaultOffset : 1
