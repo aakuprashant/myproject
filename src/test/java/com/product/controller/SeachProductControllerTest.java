@@ -19,7 +19,6 @@ import com.product.service.ProductSearchServiceImp;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = SeachProductController.class)
 @Import(ProductSearchServiceImp.class)
 class SeachProductControllerTest {
@@ -38,13 +37,15 @@ class SeachProductControllerTest {
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
+        
+        Mockito.when(repository.findByProductName("Test",1,1)).thenReturn(Flux.just(product));
 	    
 	    webClient.get()
-	      .uri("/Products/productName/{productName}","test")
+	      .uri("/api/v1/products/name/"+"test?page=10&offset=1")
 	      .exchange()
-	      .expectStatus().isNotFound();
+	      .expectStatus().isOk();
 	 
-        Mockito.when(repository.findByProductName("test",1,0)).thenReturn(Flux.just(product));
+        Mockito.when(repository.findByProductName("test",1,1)).thenReturn(Flux.just(product));
 	    
 	    
 	}
@@ -57,13 +58,14 @@ class SeachProductControllerTest {
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
-	    
+        Mockito.when(repository.findBySize("L",1,1)).thenReturn(Flux.just(product));
+
 	    webClient.get()
-	      .uri("/products/size/{size}","L")
+	      .uri("/api/v1/products/size/"+"L?page=10&offset=1")
 	      .exchange()
-	      .expectStatus().isNotFound();
+	      .expectStatus().isOk();
 	 
-        Mockito.when(repository.findBySize("L",1,0)).thenReturn(Flux.just(product));
+
 	    
 	    
 	}
@@ -76,13 +78,13 @@ class SeachProductControllerTest {
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
-	    
+        Mockito.when(repository.findByProductDetails("Test","L",1,1)).thenReturn(Flux.just(product));
+
 	    webClient.get()
-	      .uri("/Products/productName/{productName}/size/{size}","test","L")
+	      .uri("/api/v1/products/name/Test/size/L"+"?page=1&offset=1")
 	      .exchange()
-	      .expectStatus().isNotFound();
+	      .expectStatus().isOk();
 	 
-        Mockito.when(repository.findByProductDetails("test","L",1,0)).thenReturn(Flux.just(product));
 	    
 	    
 	}
@@ -95,13 +97,13 @@ class SeachProductControllerTest {
 		product.setSize("L");
 		
         Mockito.when(repository.save(product)).thenReturn(Mono.just(product));
-	    
+        Mockito.when(repository.findProducts(10, 1)).thenReturn(Flux.just(product));
+
 	    webClient.get()
-	      .uri("/Products/page/{offset}",1)
+	      .uri("/api/v1/products/?page=10&offset=1")
 	      .exchange()
-	      .expectStatus().isNotFound();
+	      .expectStatus().isOk();
 	 
-        Mockito.when(repository.findAll()).thenReturn(Flux.just(product));
 	    
 	    
 	}

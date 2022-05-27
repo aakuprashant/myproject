@@ -21,7 +21,7 @@ public class DeleteProductController {
 	@Autowired
 	ProductService productService;
 	
-	  @DeleteMapping(value="/{key}")
+	  @DeleteMapping(value="/products/{key}")
 	  @ResponseStatus(HttpStatus.OK)
 	  public Mono<Product> delete(@PathVariable("key") long key) {
 		  logger.info("Start process  :deletion of new product"); 

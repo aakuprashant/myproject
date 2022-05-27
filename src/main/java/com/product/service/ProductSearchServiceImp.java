@@ -1,15 +1,19 @@
 package com.product.service;
 
 
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.product.document.PageSupport;
 import com.product.document.Product;
 import com.product.error.ProductNotFoundException;
+import com.product.repository.CouchbaseRepository;
 import com.product.repository.ProductRepository;
 
 import reactor.core.publisher.Flux;
@@ -30,7 +34,8 @@ public class ProductSearchServiceImp implements ProductSearchService {
 
 	@Autowired
 	ProductRepository productRepository;
-	
+	@Autowired
+	CouchbaseRepository repository;
 	
 	@Override
 	public Mono<Product> findProductByKey(long key) {
@@ -43,42 +48,60 @@ public class ProductSearchServiceImp implements ProductSearchService {
 	
 
 	@Override
-	public Flux<Product> findProductByName(String productName,int offset) {
+	public Flux<Product> findProductByName(String productName,int page,int offset) {
 
 
-		return productRepository.findByProductName(productName.toLowerCase(),page,offset)
+		return productRepository.findByProductName(productName.toLowerCase(),page,getOffset(offset))
 				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product name ( %S ) does not exist in data base.",productName))))
 			     .doOnError(e->logger.error("product name {} not able to search.Error :{}",e.getMessage()));
 	}
 
 	@Override
-	public Flux<Product> findByProductSize(String size,int offset) {
-		return productRepository.findBySize(size.toLowerCase(),page,offset)
+	public Flux<Product> findByProductSize(String size,int page,int offset) {
+		return productRepository.findBySize(size.toLowerCase(),page,getOffset(offset))
 				      .switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product size ( %S ) does not exist in data base.",size))))
 	                    .doOnError(e->logger.error("product size {} not able to fetch, error :{}",size,e.getMessage()));
 	}
 
 	@Override
-	public Flux<Product> findProducts(int offset) {
-		int skipSize=(offset-1)*page+1 ;
-		return  productRepository.findAll()
+	public Flux<Product> findProducts(int page,int offset) {
+		
+		return  productRepository.findProducts( page, getOffset(offset))
 				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("None of Product  exists in data base."))))
-    		     .doOnError(e->logger.error("products are not able to fetch, error :{}",e.getMessage()))
-                  .sort((p1,p2)-> Long.valueOf(p1.getProductKey()).compareTo(Long.valueOf(p2.getProductKey())))
-                   .skip(skipSize)
-                    .take(page); 
+    		     .doOnError(e->logger.error("products are not able to fetch, error :{}",e.getMessage()));
+                  /*.sort((p1,p2)-> Long.valueOf(p1.getProductKey()).compareTo(Long.valueOf(p2.getProductKey())))
+                   .skip(getOffset(offset))
+                    .take(page);*/ 
+	}
+
+	
+
+	@Override
+	public Flux<Product> findProductsByName(String name, String size,int page,int offset) {
+		return productRepository.findByProductDetails(name.toLowerCase(), size.toLowerCase(),page,getOffset(offset))
+				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product size(%S) and name(%S)  exists in data base.",size,name))))
+	              .doOnError(e->logger.error("product name {} and size {} not able to search, error :{}",name,size,e.getMessage()));
+
+	}
+
+	
+	private int getOffset(int offset) {
+		return ((offset-1)*page) ;
 	}
 
 
 
 	@Override
-	public Flux<Product> findProductsByName(String name, String size,int offset) {
-		return productRepository.findByProductDetails(name.toLowerCase(), size.toLowerCase(),page,offset)
-				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product size(%S) and name(%S)  exists in data base.",size,name))))
-	              .doOnError(e->logger.error("product name {} and size {} not able to search, error :{}",name,size,e.getMessage()));
-
-	}
-	
-	
+	public Mono<PageSupport<Product>> getProductPage(PageRequest page) {
+		return productRepository.findAll()
+				.collectList()
+		        .map(list -> new PageSupport<Product>(
+		            list
+		                .stream()
+		                .skip(page.getPageNumber() * page.getPageSize())
+		                .limit(page.getPageSize())
+		                .collect(Collectors.toList()),
+		            page.getPageNumber(), page.getPageSize(), list.size()));
+     }
 
 }

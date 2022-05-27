@@ -1,6 +1,5 @@
 package com.product.service;
 
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ProductServiceImp implements ProductService {
 	
-	
+
 	
 	Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
@@ -27,7 +26,8 @@ public class ProductServiceImp implements ProductService {
 	
 	@Override
 	public Mono<Product> createProduct(Product product) {
-	product.setProductKey(GeneratorKey.generateId());
+		if(product.getProductKey() ==0 )
+		     product.setProductKey(GeneratorKey.generateId());
 		return this.productRepository
 	            .save(product)
 	             .doOnError(th->logger.error("failed to create ,Error message : {}",th.getMessage()))
@@ -37,13 +37,17 @@ public class ProductServiceImp implements ProductService {
 
 	@Override
 	public Mono<Product> updateProduct(Product product, long key) {
-		return productRepository
-        .findById(key)
+		Mono<Product> prod=productRepository
+		.findById(key)
          .switchIfEmpty(Mono.error(new ProductNotFoundException(String.format("Product key ( %S ) does not exist. error",key))))
-          .map(p -> new Product(p.getProductKey(), product.getProductName(),product.getSize()))
-           .flatMap(this.productRepository::save)
-             .doOnError(th->logger.error("failed to update ,Error message : {}",th.getMessage()))
-             .doOnSuccess(p->logger.info("product key {} has been updated seccessfully",p.getProductKey()));
+          .map(p -> new Product(p.getProductKey(), product.getProductName(),product.getSize()));
+		
+		this.productRepository.deleteById(key);
+		
+		return prod.flatMap(p -> this.productRepository.save(p))
+				.doOnError(th->logger.error("failed to create ,Error message : {}",th.getMessage()))
+	              .doOnSuccess(p ->logger.info("product key {} has been updated seccessfully",p.getProductKey()));
+         
 	}
 	
 	 
@@ -64,9 +68,9 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public  Flux<Product> createProducts(Flux<Product> products) {
 		 products.flatMap(p->productRepository.save(p))
-		.onErrorContinue((th, p) ->logger.error("Exception: " + th.getMessage()))
-        .subscribe( p -> logger.info("products {} have been created seccessfully",p.getProductKey()),
-                    e -> logger.error("failed to create ,Error message : {}",e.getMessage()));
+		  .onErrorContinue((th, p) ->logger.error("Exception: " + th.getMessage()))
+           .subscribe( p -> logger.info("products {} have been created seccessfully",p.getProductKey()),
+                        e -> logger.error("failed to create ,Error message : {}",e.getMessage()));
 		
 		return products;
 		 
@@ -74,4 +78,5 @@ public class ProductServiceImp implements ProductService {
 
 	
 
+	
 }

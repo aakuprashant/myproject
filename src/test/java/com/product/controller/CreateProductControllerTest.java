@@ -2,14 +2,13 @@ package com.product.controller;
 
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 import com.product.document.Product;
@@ -20,7 +19,6 @@ import com.product.service.ProductServiceImp;
 import reactor.core.publisher.Mono;
 
 
-@ExtendWith(SpringExtension.class)
 @WebFluxTest(CreateProductController.class)
 @Import(ProductServiceImp.class)
 public class CreateProductControllerTest {
@@ -38,17 +36,31 @@ public class CreateProductControllerTest {
 		product.setProductKey(1L);
 		product.setProductName("Test");
 		product.setSize("L");
-	    Mono<Product> p=Mono.just(product);
-	    Mockito.when(productService.save(product)).thenReturn(Mono.just(product));
-	    
+	   
+	    Mockito
+        .when(this.productService.findById(product.getProductKey()))
+        .thenReturn(Mono.just(product));
 
-	    webClient.put()
-        .uri("/1")
-        .body(Mono.just(p), Product.class)
-        .exchange()
-        .expectStatus().isNotFound();
+	    Mockito
+	     .when(productService.save(product))
+	     .thenReturn(Mono.just(product));
+	    
 	    
 	   
+	    
+	    this.webClient
+        .put()
+        .uri("/api/v1/products/" + product.getProductKey())
+        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .body(Mono.just(product), Product.class)
+        .exchange()
+        .expectStatus().isOk();
+        /*.expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectBody()
+        .jsonPath("$.productKey").isEqualTo(product.getProductKey())
+        .jsonPath("$.productName").isEqualTo(product.getProductName())
+        .jsonPath("$.size").isEqualTo(product.getSize());
+*/
 	    
 	    
         /*.expectBody(Product.class)
@@ -71,11 +83,12 @@ public class CreateProductControllerTest {
 	    
   
 	    webClient.post()
-        .uri("/")
+        .uri("/api/v1/")
+        .contentType(MediaType.APPLICATION_JSON)
         .body(Mono.just(p), Product.class)
         .exchange()
         .expectStatus()
-        .isBadRequest();
+        .isOk();
 	    
 	    
 	    

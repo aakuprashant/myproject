@@ -23,7 +23,7 @@ public class UpdateProductController {
 	@Autowired
 	ProductService productService;
 	
-	  @PutMapping(value="/{key}",consumes = MediaType.APPLICATION_JSON_VALUE)
+	  @PutMapping(value="/products/{key}",consumes = MediaType.APPLICATION_JSON_VALUE)
 	  @ResponseStatus(HttpStatus.OK)
 	  public Mono<Product> update(@PathVariable("key") long key ,@RequestBody Product product) {
 		  logger.info("Start process  :updation of existing product"); 

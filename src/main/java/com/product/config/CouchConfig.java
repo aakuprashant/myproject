@@ -5,9 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.repository.config.EnableReactiveCouchbaseRepositories;
 
+import com.product.repository.CouchbaseRepository;
+import com.product.repository.ProductRepository;
+
 
 @Configuration
-@EnableReactiveCouchbaseRepositories(basePackageClasses = {CouchConfig.class})
+@EnableReactiveCouchbaseRepositories(basePackageClasses = {ProductRepository.class})
 public class CouchConfig extends AbstractCouchbaseConfiguration {
 
 	  @Value("${couchbase.hostname}")

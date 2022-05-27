@@ -10,12 +10,14 @@ import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 
 
 
+
 @Document
 public class Product {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationStrategy.UNIQUE)
-	private Long productKey;
+	private Long productKey=0L;
+	
 	
 	@Field
 	private String productName;
@@ -26,12 +28,13 @@ public class Product {
 	
 	
 	public Product(String productName, String size) {
+		this.productKey=GeneratorKey.generateId();
 		this.productName = productName;
 		this.size = size;
 	}
 
     public Product(Long productKey, String productName, String size) {
-		this.productKey = productKey;
+		this.productKey = productKey !=0 ? productKey :GeneratorKey.generateId() ;
 		this.productName = productName;
 		this.size = size;
 	}
@@ -57,4 +60,8 @@ public class Product {
 	public void setSize(String size) {
 		this.size = size;
 	}
+
+	
+	
+	
 }
