@@ -22,7 +22,8 @@ dependencies {
 }
 
 tasks.named('test') {
-    useJUnit()
-	useTestNG()
 	useJUnitPlatform()
+}
+sourceSet{
+
 }

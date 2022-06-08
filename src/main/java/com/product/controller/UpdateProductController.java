@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import com.product.service.ProductService;
 import reactor.core.publisher.Mono;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UpdateProductController {
 	Logger logger = LoggerFactory.getLogger(UpdateProductController.class);
 
@@ -25,9 +27,9 @@ public class UpdateProductController {
 	
 	  @PutMapping(value="/products/{key}",consumes = MediaType.APPLICATION_JSON_VALUE)
 	  @ResponseStatus(HttpStatus.OK)
-	  public Mono<Product> update(@PathVariable("key") long key ,@RequestBody Product product) {
+	  public Mono<Product> update(@PathVariable("key") String key ,@RequestBody Product product) {
 		  logger.info("Start process  :updation of existing product"); 
-		  Mono<Product> productdetail=productService.updateProduct(product,product.getProductKey());
+		  Mono<Product> productdetail=productService.updateProduct(product,key);
 		  logger.info("end process  :updation of existing product"); 
 
 	    return productdetail;
