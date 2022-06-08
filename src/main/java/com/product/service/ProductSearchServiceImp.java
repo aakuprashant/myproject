@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.product.constant.Constants;
 import com.product.document.PageSupport;
 import com.product.document.Product;
 import com.product.error.ProductNotFoundException;
@@ -38,10 +39,10 @@ public class ProductSearchServiceImp implements ProductSearchService {
 	CouchbaseRepository repository;
 	
 	@Override
-	public Mono<Product> findProductByKey(long key) {
+	public Mono<Product> findProductByKey(String key) {
 		return productRepository.findById(key)
-				.switchIfEmpty(Mono.error(new ProductNotFoundException(String.format("Product key ( %S ) does not exist in data base.",key))))
-	    		  .doOnError(e->logger.error("product key {} not able to search, error :{}",e.getMessage()))
+				.switchIfEmpty(Mono.error(new ProductNotFoundException(String.format(Constants.PRODUCT_NOT_EXIST_MEASAGE,key))))
+	    		  .doOnError(e->logger.error(Constants.PRODUCT_ERROR_MEASAGE,e.getMessage()))
 	    		   .doOnSuccess(p->logger.info("product key {} has been fetched successfully",p.getProductKey()));
 	}
 
@@ -52,23 +53,23 @@ public class ProductSearchServiceImp implements ProductSearchService {
 
 
 		return productRepository.findByProductName(productName.toLowerCase(),page,getOffset(offset))
-				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product name ( %S ) does not exist in data base.",productName))))
-			     .doOnError(e->logger.error("product name {} not able to search.Error :{}",e.getMessage()));
+				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format(Constants.PRODUCT_NOT_EXIST_MEASAGE,productName))))
+			     .doOnError(e->logger.error(Constants.PRODUCT_ERROR_MEASAGE,e.getMessage()));
 	}
 
 	@Override
 	public Flux<Product> findByProductSize(String size,int page,int offset) {
 		return productRepository.findBySize(size.toLowerCase(),page,getOffset(offset))
-				      .switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product size ( %S ) does not exist in data base.",size))))
-	                    .doOnError(e->logger.error("product size {} not able to fetch, error :{}",size,e.getMessage()));
+				      .switchIfEmpty(Flux.error(new ProductNotFoundException(String.format(Constants.PRODUCT_NOT_EXIST_MEASAGE,size))))
+	                    .doOnError(e->logger.error(Constants.PRODUCT_ERROR_MEASAGE,size,e.getMessage()));
 	}
 
 	@Override
 	public Flux<Product> findProducts(int page,int offset) {
 		
 		return  productRepository.findProducts( page, getOffset(offset))
-				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("None of Product  exists in data base."))))
-    		     .doOnError(e->logger.error("products are not able to fetch, error :{}",e.getMessage()));
+				.switchIfEmpty(Flux.error(new ProductNotFoundException(Constants.NOT_FOUND_MEASAGE)))
+    		     .doOnError(e->logger.error(Constants.PRODUCT_ERROR_MEASAGE,e.getMessage()));
                   /*.sort((p1,p2)-> Long.valueOf(p1.getProductKey()).compareTo(Long.valueOf(p2.getProductKey())))
                    .skip(getOffset(offset))
                     .take(page);*/ 
@@ -80,7 +81,7 @@ public class ProductSearchServiceImp implements ProductSearchService {
 	public Flux<Product> findProductsByName(String name, String size,int page,int offset) {
 		return productRepository.findByProductDetails(name.toLowerCase(), size.toLowerCase(),page,getOffset(offset))
 				.switchIfEmpty(Flux.error(new ProductNotFoundException(String.format("Product size(%S) and name(%S)  exists in data base.",size,name))))
-	              .doOnError(e->logger.error("product name {} and size {} not able to search, error :{}",name,size,e.getMessage()));
+	              .doOnError(e->logger.error(Constants.PRODUCT_ERROR_MEASAGE,name,size,e.getMessage()));
 
 	}
 

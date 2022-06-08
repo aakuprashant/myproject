@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 public interface ProductSearchService {
 	
-    public Mono<Product> findProductByKey(long key);
+    public Mono<Product> findProductByKey(String key);
     public Flux<Product> findProductByName(String productName,int page,int offset);
     public Flux<Product> findByProductSize(String size,int page,int offset);
     public Flux<Product> findProductsByName(String productName,String size,int page,int offset);

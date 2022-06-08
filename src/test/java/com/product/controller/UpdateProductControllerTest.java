@@ -1,12 +1,10 @@
 package com.product.controller;
 
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -16,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 
@@ -27,9 +26,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-@WebFluxTest(CreateProductController.class)
+@WebFluxTest(UpdateProductController.class)
 @AutoConfigureWebTestClient
- class CreateProductControllerTest {
+class UpdateProductControllerTest {
 
 	@MockBean
 	ProductRepository repository;
@@ -40,60 +39,26 @@ import reactor.core.publisher.Mono;
     @Autowired
 	private WebTestClient webClient;
     
-   
-	
-	@Test
-	void testCreateSingleProduct() {
-		Product product = new Product();
-		product.setProductName("test");
-		product.setSize("L");
+  
 
-		
-		
+	
+
+	@Test
+    void testUpdate() {
+		Product product = new Product();
+		product.setProductName("Product1");
+		product.setSize("XL");
 	    Mockito.when(service.createProduct(product)).thenReturn(Mono.just(product));
 	   
-	    webClient.post()
-        .uri("/api/v1/product")
+	    webClient.put()
+        .uri("/api/v1/products/1")
+        .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(product)
         .exchange()
-        .expectStatus().isCreated()
+        .expectStatus().isOk()
         .expectBody(Product.class);
 	    
        
 	}
-	
-	@Test
-	 void testCreateProducts() {
-		List<Product> products=new ArrayList<Product>();
-		Product product = new Product();
-		product.setProductKey("1");
-		product.setProductName("product");
-		product.setSize("L");
-        products.add(product);
-		product = new Product();
-		product.setProductKey("2");
-		product.setProductName("product1");
-		product.setSize("L");
-        products.add(product);
-
-	    Mockito.when(service.createProducts(Flux.fromIterable(products))).thenReturn(Flux.fromIterable(products));
-	   
-	    webClient.post()
-        .uri("/api/v1/products")
-        .bodyValue(products)
-        .exchange()
-        .expectStatus().isCreated()
-        .expectBodyList(Product.class)
-       /* .hasSize(2)
-	    .consumeWith(
-	    	prodinfo->{
-	    		Product prod=prodinfo.getResponseBody().get(0);
-	    		assertNotNull(prod.getProductKey());
-	    		System.out.println(prod.getProductKey());
-	    	})*/
-	    ;
-       
-	}
-	
 
 }
